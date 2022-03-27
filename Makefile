@@ -1,7 +1,10 @@
-.PHONY: tree script
+.PHONY: tree script config
 
 tree:
 	tree -I .venv
 
 script:
-	python src/scrape.py
+	@python scraper/scrape.py
+
+config:
+	@python src/scraper/config_test.py
