@@ -1,23 +1,23 @@
 product: Raspberry Pi
 sites:
-- name: CanaKit
-  urls: 
-  - 'https://www.canakit.com/raspberry-pi-4-REPLACE_MEgb.html'
-  models: 
-  - 2
-  - 4
-  - 8
-- name: PiShop
-  urls: 
-  - 'https://www.pishop.us/product/raspberry-pi-4-model-b-REPLACE_MEgb/?src=raspberrypi'
-  models:
-  - 2
-  - 4
-  - 8
-- name: Vilros
-  urls:
-  - 'https://vilros.com/collections/raspberry-pi-boards/products/raspberry-pi-4-REPLACE_MEgb-ram'
-  - 'https://vilros.com/collections/raspberry-pi-boards/products/raspberry-pi-4-model-b-8gb-ram'
-  models:
-  - 2
-  - 4
+  - name: CanaKit
+    urls:
+      - "https://www.canakit.com/raspberry-pi-4-REPLACE_MEgb.html"
+    models:
+      - 2
+      - 4
+      - 8
+  - name: PiShop
+    urls:
+      - "https://www.pishop.us/product/raspberry-pi-4-model-b-REPLACE_MEgb/?src=raspberrypi"
+    models:
+      - 2
+      - 4
+      - 8
+  - name: Vilros
+    urls:
+      - "https://vilros.com/collections/raspberry-pi-boards/products/raspberry-pi-4-REPLACE_MEgb-ram"
+      - "https://vilros.com/collections/raspberry-pi-boards/products/raspberry-pi-4-model-b-8gb-ram"
+    models:
+      - 2
+      - 4

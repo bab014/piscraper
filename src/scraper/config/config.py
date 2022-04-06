@@ -3,23 +3,46 @@ Contains the config class for storing a config object
 """
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List
+import os
+from typing import Any, Dict, List
+import uuid
 import yaml
 
+PGUSER = os.getenv("PGUSER")
+PGPASSWORD = os.getenv("PGPASSWORD")
+PGPORT = os.getenv("PGPORT")
+PGHOST = os.getenv("PGHOST")
+PGDATABASE = os.getenv("PGDATABASE")
+DATABASE_URI = (
+    f"postgresql+psycopg2://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}"
+)
 
-@dataclass
+
 class ScraperResult:
     """
     Result of scrape
-    Meant to easily hold the rsults of the webscraping function
+    Meant to easily hold the results of the webscraping function
     """
 
+    id: uuid.UUID
     site: str
     product: str
     in_stock: bool
     price: float
     purchase_url: str
     date: datetime
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = {}
+        d["id"] = str(self.id)
+        d["site"] = self.site
+        d["product"] = self.product
+        d["in_stock"] = self.in_stock
+        d["price"] = self.price
+        d["purchase_url"] = self.purchase_url
+        d["date"] = self.date.strftime("%Y-%m-%d")
+
+        return d
 
 
 @dataclass

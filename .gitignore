@@ -4,3 +4,5 @@ __pycache__
 .vscode
 .coverage
 .pytest_cache
+*.ipynb
+.env

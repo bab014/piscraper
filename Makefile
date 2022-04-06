@@ -1,7 +1,8 @@
 .PHONY: tree tests
 
 tree:
-	@tree -I .venv
+	@tree -I ".venv, *.egg-info"
 
 tests:
-	@pytest
+	@pytest -v
+
