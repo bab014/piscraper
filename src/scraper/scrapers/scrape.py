@@ -117,14 +117,14 @@ class Scraper:
 
                     scrape_results.append(sr)
 
-        return scrape_results
-
         engine = create_engine(cfg.DATABASE_URI)
         Session = sessionmaker(bind=engine)
         session = Session()
         session.add_all(scrape_results)
         session.commit()
         session.close()
+
+        return scrape_results
 
         # raise InvalidWebsite("invalid website provided for scraping")
 
