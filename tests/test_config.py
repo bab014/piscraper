@@ -2,7 +2,7 @@ import scraper
 import scraper.models.response as models
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 import pytest
 
 
@@ -38,8 +38,10 @@ def test_insert(engine: Engine) -> None:
     )
 
     response = None
-    with Session(engine) as session:
-        session.add(sr)
-        response = session.commit()
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    session.add(sr)
+    response = session.commit()
+    session.close()
 
     assert response is None

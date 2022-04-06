@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 import scraper.config.config as cfg
 from scraper.models.response import ScraperResult
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
 # from scraper.errors import InvalidWebsite
@@ -118,9 +118,11 @@ class Scraper:
                     scrape_results.append(sr)
 
         engine = create_engine(cfg.DATABASE_URI)
-        with Session(engine) as session:
-            session.add_all(scrape_results)
-            session.commit()
+        Session = sessionmaker(bind=engine)
+        session = Session()
+        session.add_all(scrape_results)
+        session.commit()
+        session.close()
 
         # raise InvalidWebsite("invalid website provided for scraping")
 
