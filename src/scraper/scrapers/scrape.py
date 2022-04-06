@@ -117,6 +117,8 @@ class Scraper:
 
                     scrape_results.append(sr)
 
+        return scrape_results
+
         engine = create_engine(cfg.DATABASE_URI)
         Session = sessionmaker(bind=engine)
         session = Session()

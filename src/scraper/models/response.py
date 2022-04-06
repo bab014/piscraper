@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, Float, String, DateTime, Boolean
+from typing import Any, Dict
 import uuid
 
 
@@ -25,3 +26,13 @@ class ScraperResult(Base):
 
     def __repr__(self) -> str:
         return f"<ScraperResult(site={self.site}, product={self.product}, in_stock={self.in_stock}, price={self.price})>"
+
+    def to_dict(self) -> Dict[str, Any]:
+        d = {}
+        d["site"] = self.site
+        d["product"] = self.product
+        d["in_stock"] = self.in_stock
+        d["price"] = self.price
+        d["purchase_url"] = self.purchase_url
+
+        return d
