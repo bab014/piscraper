@@ -2,10 +2,8 @@
 Contains the config class for storing a config object
 """
 from dataclasses import dataclass
-from datetime import datetime
 import os
-from typing import Any, Dict, List
-import uuid
+from typing import List
 import yaml
 
 PGUSER = os.getenv("PGUSER")
@@ -18,31 +16,31 @@ DATABASE_URI = (
 )
 
 
-class ScraperResult:
-    """
-    Result of scrape
-    Meant to easily hold the results of the webscraping function
-    """
+# class ScraperResult:
+#     """
+#     Result of scrape
+#     Meant to easily hold the results of the webscraping function
+#     """
 
-    id: uuid.UUID
-    site: str
-    product: str
-    in_stock: bool
-    price: float
-    purchase_url: str
-    date: datetime
+#     id: uuid.UUID
+#     site: str
+#     product: str
+#     in_stock: bool
+#     price: float
+#     purchase_url: str
+#     date: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
-        d = {}
-        d["id"] = str(self.id)
-        d["site"] = self.site
-        d["product"] = self.product
-        d["in_stock"] = self.in_stock
-        d["price"] = self.price
-        d["purchase_url"] = self.purchase_url
-        d["date"] = self.date.strftime("%Y-%m-%d")
+#     def to_dict(self) -> Dict[str, Any]:
+#         d = {}
+#         d["id"] = str(self.id)
+#         d["site"] = self.site
+#         d["product"] = self.product
+#         d["in_stock"] = self.in_stock
+#         d["price"] = self.price
+#         d["purchase_url"] = self.purchase_url
+#         d["date"] = self.date.strftime("%Y-%m-%d")
 
-        return d
+#         return d
 
 
 @dataclass
