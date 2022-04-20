@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scraper.scrapers.scrape &mdash; scraper  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> scraper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">scraper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>scraper.scrapers.scrape</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scraper.scrapers.scrape</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The main class for scraping</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">scraper.config.config</span> <span class="k">as</span> <span class="nn">cfg</span>
+<span class="kn">from</span> <span class="nn">scraper.models.response</span> <span class="kn">import</span> <span class="n">ScraperResult</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span>
+
+<span class="c1"># from scraper.errors import InvalidWebsite</span>
+
+
+<div class="viewcode-block" id="price_to_float"><a class="viewcode-back" href="../../../scraper.scrapers.html#scraper.scrapers.scrape.price_to_float">[docs]</a><span class="k">def</span> <span class="nf">price_to_float</span><span class="p">(</span><span class="n">price</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">price</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Scraper"><a class="viewcode-back" href="../../../scraper.scrapers.html#scraper.scrapers.scrape.Scraper">[docs]</a><span class="k">class</span> <span class="nc">Scraper</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The base scraper for scraping the web</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">cfg</span><span class="o">.</span><span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">cfg</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">product</span><span class="si">}</span><span class="s2"> scraper&quot;</span>
+
+<div class="viewcode-block" id="Scraper.scrape"><a class="viewcode-back" href="../../../scraper.scrapers.html#scraper.scrapers.scrape.Scraper.scrape">[docs]</a>    <span class="k">def</span> <span class="nf">scrape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loops through the sites in config and scrapes.</span>
+<span class="sd">        Returns a list of ScraperResults</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">scrape_results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sites</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">site</span><span class="o">.</span><span class="n">prepare_urls</span><span class="p">():</span>
+
+                <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                    <span class="k">return</span>
+
+                <span class="n">html</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="s2">&quot;html.parser&quot;</span><span class="p">)</span>
+
+                <span class="c1"># CanaKit website</span>
+                <span class="n">so</span> <span class="o">=</span> <span class="s2">&quot;Sold Out&quot;</span>
+                <span class="k">if</span> <span class="n">site</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;CanaKit&quot;</span><span class="p">:</span>
+
+                    <span class="n">tbl</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span>
+                        <span class="s2">&quot;table&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;pdtHeadTable&quot;</span>
+                    <span class="p">)</span>  <span class="c1"># Table with information</span>
+                    <span class="n">rows</span> <span class="o">=</span> <span class="n">tbl</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s2">&quot;tr&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+                        <span class="n">product</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>  <span class="c1"># product name</span>
+                        <span class="n">price</span> <span class="o">=</span> <span class="n">price_to_float</span><span class="p">(</span>
+                            <span class="n">row</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;priceListPrice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                        <span class="p">)</span>  <span class="c1"># price</span>
+                        <span class="n">sold_out</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;ProductAddToCartDiv&quot;</span><span class="p">)</span>
+                        <span class="n">sold_out_index</span> <span class="o">=</span> <span class="n">sold_out</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">so</span><span class="p">)</span>
+                        <span class="n">link_to_buy</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                        <span class="k">if</span> <span class="n">sold_out_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">link_to_buy</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;https://www.canakit.com</span><span class="si">{</span><span class="n">sold_out</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)[</span><span class="s2">&quot;href&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+                        <span class="n">end_index</span> <span class="o">=</span> <span class="n">sold_out_index</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">so</span><span class="p">)</span>
+                        <span class="n">in_stock</span> <span class="o">=</span> <span class="n">sold_out</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">sold_out_index</span><span class="p">:</span><span class="n">end_index</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;Sold Out&quot;</span>
+
+                        <span class="n">sr</span> <span class="o">=</span> <span class="n">ScraperResult</span><span class="p">(</span>
+                            <span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span>
+                            <span class="n">in_stock</span><span class="o">=</span><span class="n">in_stock</span><span class="p">,</span>
+                            <span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
+                            <span class="n">purchase_url</span><span class="o">=</span><span class="n">link_to_buy</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="n">scrape_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+
+                <span class="c1"># Pishop</span>
+                <span class="k">elif</span> <span class="n">site</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;PiShop&quot;</span><span class="p">:</span>
+                    <span class="n">product</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;productView-title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">price</span> <span class="o">=</span> <span class="n">price_to_float</span><span class="p">(</span>
+                        <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;price price--withoutTax&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="p">)</span>
+                    <span class="n">in_stock</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;form-action-addToCart&quot;</span><span class="p">)[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+                        <span class="o">!=</span> <span class="s2">&quot;Out of stock&quot;</span>
+                    <span class="p">)</span>
+                    <span class="n">link_to_buy</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">if</span> <span class="n">in_stock</span><span class="p">:</span>
+                        <span class="c1"># TODO: find example of when in stock</span>
+                        <span class="n">link_to_buy</span> <span class="o">=</span> <span class="n">url</span>
+
+                    <span class="n">sr</span> <span class="o">=</span> <span class="n">ScraperResult</span><span class="p">(</span>
+                        <span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span>
+                        <span class="n">in_stock</span><span class="o">=</span><span class="n">in_stock</span><span class="p">,</span>
+                        <span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
+                        <span class="n">purchase_url</span><span class="o">=</span><span class="n">link_to_buy</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="n">scrape_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+
+                <span class="c1"># Vilros</span>
+                <span class="k">elif</span> <span class="n">site</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Vilros&quot;</span><span class="p">:</span>
+                    <span class="n">product</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;h1&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;product-detail__title&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">price</span> <span class="o">=</span> <span class="n">price_to_float</span><span class="p">(</span><span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;theme-money&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                    <span class="n">payment_tag</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s2">&quot;payment-buttons&quot;</span><span class="p">)</span>
+                    <span class="n">in_stock</span> <span class="o">=</span> <span class="n">payment_tag</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="s2">&quot;span&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;Sold Out&quot;</span>
+                    <span class="n">link_to_buy</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                    <span class="k">if</span> <span class="n">in_stock</span><span class="p">:</span>
+                        <span class="n">link_to_buy</span> <span class="o">=</span> <span class="n">url</span>
+
+                    <span class="n">sr</span> <span class="o">=</span> <span class="n">ScraperResult</span><span class="p">(</span>
+                        <span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">product</span><span class="o">=</span><span class="n">product</span><span class="p">,</span>
+                        <span class="n">in_stock</span><span class="o">=</span><span class="n">in_stock</span><span class="p">,</span>
+                        <span class="n">price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
+                        <span class="n">purchase_url</span><span class="o">=</span><span class="n">link_to_buy</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="n">scrape_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sr</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">scrape_results</span><span class="p">]</span>
+        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">DATABASE_URI</span><span class="p">)</span>
+        <span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">scrape_results</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+        <span class="c1"># raise InvalidWebsite(&quot;invalid website provided for scraping&quot;)</span>
+
+<div class="viewcode-block" id="Scraper.save_results"><a class="viewcode-back" href="../../../scraper.scrapers.html#scraper.scrapers.scrape.Scraper.save_results">[docs]</a>    <span class="k">def</span> <span class="nf">save_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        TODO: Build save results functionality</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bret Beatty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

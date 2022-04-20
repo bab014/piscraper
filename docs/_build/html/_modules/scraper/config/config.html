@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>scraper.config.config &mdash; scraper  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> scraper
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">scraper</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>scraper.config.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for scraper.config.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contains the config class for storing a config object</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="n">PGUSER</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PGUSER&quot;</span><span class="p">)</span>
+<span class="n">PGPASSWORD</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PGPASSWORD&quot;</span><span class="p">)</span>
+<span class="n">PGPORT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PGPORT&quot;</span><span class="p">)</span>
+<span class="n">PGHOST</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PGHOST&quot;</span><span class="p">)</span>
+<span class="n">PGDATABASE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;PGDATABASE&quot;</span><span class="p">)</span>
+<span class="n">DATABASE_URI</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;postgresql+psycopg2://</span><span class="si">{</span><span class="n">PGUSER</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">PGPASSWORD</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">PGHOST</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">PGPORT</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">PGDATABASE</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+
+
+<span class="c1"># class ScraperResult:</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Result of scrape</span>
+<span class="c1">#     Meant to easily hold the results of the webscraping function</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+
+<span class="c1">#     id: uuid.UUID</span>
+<span class="c1">#     site: str</span>
+<span class="c1">#     product: str</span>
+<span class="c1">#     in_stock: bool</span>
+<span class="c1">#     price: float</span>
+<span class="c1">#     purchase_url: str</span>
+<span class="c1">#     date: datetime</span>
+
+<span class="c1">#     def to_dict(self) -&gt; Dict[str, Any]:</span>
+<span class="c1">#         d = {}</span>
+<span class="c1">#         d[&quot;id&quot;] = str(self.id)</span>
+<span class="c1">#         d[&quot;site&quot;] = self.site</span>
+<span class="c1">#         d[&quot;product&quot;] = self.product</span>
+<span class="c1">#         d[&quot;in_stock&quot;] = self.in_stock</span>
+<span class="c1">#         d[&quot;price&quot;] = self.price</span>
+<span class="c1">#         d[&quot;purchase_url&quot;] = self.purchase_url</span>
+<span class="c1">#         d[&quot;date&quot;] = self.date.strftime(&quot;%Y-%m-%d&quot;)</span>
+
+<span class="c1">#         return d</span>
+
+
+<div class="viewcode-block" id="Site"><a class="viewcode-back" href="../../../scraper.config.html#scraper.config.config.Site">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Site</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A site defined in a yaml config file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">urls</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">models</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Site.prepare_urls"><a class="viewcode-back" href="../../../scraper.config.html#scraper.config.config.Site.prepare_urls">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prepares the urls for usage by request</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Vilros&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">:</span>
+                <span class="n">urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;REPLACE_ME&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)))</span>
+            <span class="n">urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">urls</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">:</span>
+                <span class="n">urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;REPLACE_ME&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">urls</span></div></div>
+
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../scraper.config.html#scraper.config.config.Config">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Config Dataclass for storing</span>
+<span class="sd">    the configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">product</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">sites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="create_config"><a class="viewcode-back" href="../../../scraper.config.html#scraper.config.config.create_config">[docs]</a><span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="n">yml</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Config</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes in a yaml file and returns a Config object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yml</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">raw_yaml</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">yaml_obj</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">raw_yaml</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error loading the config file:&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">sites</span> <span class="o">=</span> <span class="p">[</span><span class="n">Site</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;urls&quot;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">yaml_obj</span><span class="p">[</span><span class="s2">&quot;sites&quot;</span><span class="p">]]</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span><span class="n">product</span><span class="o">=</span><span class="n">yaml_obj</span><span class="p">[</span><span class="s2">&quot;product&quot;</span><span class="p">],</span> <span class="n">sites</span><span class="o">=</span><span class="n">sites</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">config</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bret Beatty.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

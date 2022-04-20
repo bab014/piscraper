@@ -45,3 +45,4 @@ def test_insert(engine: Engine) -> None:
     session.close()
 
     assert response is None
+
