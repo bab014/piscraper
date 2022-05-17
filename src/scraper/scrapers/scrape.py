@@ -3,14 +3,13 @@ The main class for scraping
 """
 from bs4 import BeautifulSoup
 import requests
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 import scraper.config.config as cfg
 from scraper.models.response import ScraperResult
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 
 # from scraper.errors import InvalidWebsite
-
-
 def price_to_float(price: str) -> float:
     return float(price.replace("$", ""))
 

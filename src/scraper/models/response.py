@@ -17,6 +17,7 @@ class ScraperResult(Base):
 
     __tablename__ = "scraper_results"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    """A uuid for identifying a result"""
     site = Column(String(30))
     product = Column(String(60))
     in_stock = Column(Boolean)
@@ -28,6 +29,7 @@ class ScraperResult(Base):
         return f"<ScraperResult(site={self.site}, product={self.product}, in_stock={self.in_stock}, price={self.price})>"
 
     def to_dict(self) -> Dict[str, Any]:
+        """Method for converting the class instance into a dictionary"""
         d = {}
         d["site"] = self.site
         d["product"] = self.product

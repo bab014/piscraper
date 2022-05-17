@@ -42,7 +42,6 @@ DATABASE_URI = (
 
 #         return d
 
-
 @dataclass
 class Site:
     """
